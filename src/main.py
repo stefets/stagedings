@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # SPDX-License-Identifier: GPL-2.0-or-later
+
 import os
 import json
 from typing import Union
@@ -57,14 +58,14 @@ def api_prev_subscene():
     return '', 204
 
 
-@app.get("/switch_scene/<int:id>")
-def api_switch_scene(id):
+@app.get("/switch_scene/{id}")
+def api_switch_scene(id : int):
     switch_scene(id)
     return '', 204
 
 
-@app.get("/switch_subscene/<int:id>")
-def api_switch_subscene(id):
+@app.get("/switch_subscene/{id}")
+def api_switch_subscene(id : int):
     switch_subscene(id)
     return '', 204
 
@@ -127,9 +128,9 @@ def prev_scene():
     live_context.prev_scene()
 
 
-def switch_scene(id):
+def switch_scene(id : int):
     live_context.switch_scene(id)
 
 
-def switch_subscene(id):
+def switch_subscene(id : int):
     live_context.switch_subscene(id)
