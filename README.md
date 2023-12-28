@@ -1,3 +1,5 @@
+# NOTE : This is a POC to refactor the flaskdings API with FastApi
+
 # FastDings
 ## A simple and effective API and UI for Mididings community version
 
