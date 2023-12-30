@@ -10,7 +10,10 @@ from threading import Lock
 from services.live import LiveContext
 
 from fastapi import FastAPI
+from fastapi_socketio import SocketManager
+
 app = FastAPI()
+sio = SocketManager(app=app)
 
 """  Configuration """
 
