@@ -9,7 +9,11 @@ from typing import Union
 from threading import Lock
 from services.live import LiveContext
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from fastapi_socketio import SocketManager
 
 app = FastAPI()
@@ -17,25 +21,44 @@ sio = SocketManager(app=app)
 
 """  Configuration """
 
-filename = os.path.join('static', 'config.json')
-with open(filename) as FILE:
-    configuration = json.load(FILE)
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+templates = Jinja2Templates(directory="templates")
+
+config = os.path.join('static', 'config.json')
+with open(config) as FILE:
+    settings = json.load(FILE)
 
 thread = None
 thread_lock = Lock()    
 
 ''' Mididings and OSC context '''
 live_context = LiveContext(
-    configuration["osc_server"])
+    settings["osc_server"])
 
 '''
     Api routes
 '''
 
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+@app.get("/", response_class=HTMLResponse)
+async def index(request : Request):
+    context = {
+        "request": request
+    }
+    return templates.TemplateResponse(
+        name="index.html", context=context
+    )
+
+
+@app.get("/ui", response_class=HTMLResponse)
+async def ui(request : Request):
+    context = {
+        "request": request
+    }
+    return templates.TemplateResponse(
+        name="ui.html", context=context
+    )
 
 @app.get("/next_scene")
 def api_next_scene():
