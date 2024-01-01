@@ -8,16 +8,24 @@ import json
 from typing import Union
 from threading import Lock
 from services.live import LiveContext
-
-from fastapi import FastAPI, Request
+from fastapi import (
+    Request,
+    Cookie,
+    Depends,
+    FastAPI,
+    Query,
+    WebSocket,
+    WebSocketException,
+    status,
+)
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from fastapi_socketio import SocketManager
+#from fastapi_socketio import SocketManager
 
 app = FastAPI()
-sio = SocketManager(app=app)
+#sm = SocketManager(app=app)
 
 """  Configuration """
 
@@ -115,10 +123,49 @@ def api_restart():
 
 ''' Websockets event routes '''
 
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await websocket.accept()
+    while True:
+        data = await websocket.receive_json()
+        action = data['action']
+        print(data['action'])
+        if action == "sio_get_mididings_context":
+            await mididings_context_update()
+            await websocket.send_json({
+                "action" : "mididings_context_update",
+                "payload" : live_context.scene_context.payload
+            })
+
+        elif action == "sio_quit":
+            quit()
+            await websocket.send_json({
+                "action" : "on_terminate",
+            })
+        elif action == "sio_next_scene":
+            next_scene()
+        elif action == "sio_prev_scene":
+            prev_scene()
+        elif action == "sio_next_subscene":
+            next_subscene()
+        elif action == "sio_prev_subscene":
+            prev_subscene()
+        elif action == "sio_restart":
+            restart()
+        elif action == "sio_panic":
+            panic()
+        elif action == "sio_query":
+            query()
+        elif action == "sio_switch_scene":
+            switch_scene(int(data['id']))
+        elif action == "sio_switch_subscene":
+            switch_subscene(int(data['id']))
+
+
 
 ''' API calls  '''
 
-def mididings_context_update():
+async def mididings_context_update():
     live_context.set_dirty(False)
 
 

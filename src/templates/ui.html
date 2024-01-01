@@ -111,32 +111,51 @@
 
 <script type="text/javascript" charset="utf-8">
     $(document).ready(function () {
-        var ws = new WebSocket("ws://localhost:8000");
-        /*
-        var socket = io()
-
-        socket.on('connect', function () {
-            socket.emit('sio_get_mididings_context');
+        var ws = new WebSocket("ws://localhost:8000/ws");
+        
+        ws.onopen = function(event) {
+            ws.send('{"action" : "sio_get_mididings_context"}');
             $('#client-state').html('<div class="bg-success">ONLINE</div>');
             $('#mididings-state').html('<div class="bg-success">ONLINE</div>');
             $('#server-state').html('<div class="bg-success">ONLINE</div>');
-        });
+        }
 
-        socket.on('on_exit', function () {
-            $('#mididings-state').html('<div class="bg-danger">OFFLINE</div>');
-        });
+        ws.onmessage = function(event) {
+            const json = JSON.parse(event.data);
+            const action = json["action"];
+            switch (action) {
+                case "mididings_context_update":
+                    render(json["payload"]);
+                    break;
+                case "on_exit":
+                    exit();
+                    break;
+                case "on_start":
+                    start();
+                    break;
+                case "on_terminate":
+                    terminate();
+                    break;
+                default:
+                    break;
+            }
+        }
 
-        socket.on('on_start', function () {
+        function start() {
             $('#mididings-state').html('<div class="bg-success">ONLINE</div>');
-        });
+        }
 
-        socket.on('on_terminate', function () {
-            socket.disconnect();
+        function exit() {
+            $('#mididings-state').html('<div class="bg-danger">OFFLINE</div>');
+        }
+
+        function terminate() {
+            ws.close();
             $('#client-state').html('<div class="bg-danger">OFFLINE</div>');
             $('#mididings-state').html('<div class="bg-danger">OFFLINE</div>');
-        });
+        }
 
-        socket.on('mididings_context_update', function (context) {
+        function render(context) {
             //
             // Redraw the content section
             //                
@@ -210,62 +229,55 @@
             $('#subscenes').text("");
             $('#subscenes').append(content);
 
-        });
-
+        }
+        
         // Scene navigation delegate
         $("#scenes").delegate("input.switch_scene", "click", function (event) {
-            return emit('sio_switch_scene', {
+            ws.send(JSON.stringify({
+                action: "sio_switch_scene",
                 id: $(this).attr('name')
-            });
+            }));
         });
-
+        
         // Sub-Scene navigation delegate
         $("#subscenes").delegate("input.switch_subscene", "click", function (event) {
-            return emit('sio_switch_subscene', {
+            ws.send(JSON.stringify({
+                action: "sio_switch_subscene",
                 id: $(this).attr('name')
-            });
+            }));
         });
-
+        
         $('#next_scene').click(function (event) {
-            return emit('sio_next_scene');
+            ws.send('{"action" : "sio_next_scene"}');
         });
 
         $('#prev_scene').click(function (event) {
-            return emit('sio_prev_scene');
+            ws.send('{"action" : "sio_prev_scene"}');
         });
 
         $('#next_subscene').click(function (event) {
-            return emit('sio_next_subscene');
+            ws.send('{"action" : "sio_next_subscene"}');
         });
 
         $('#prev_subscene').click(function (event) {
-            return emit('sio_prev_subscene');
+            ws.send('{"action" : "sio_prev_subscene"}');
         });
 
         $('#restart').click(function (event) {
-            return emit('sio_restart');
+            ws.send('{"action" : "sio_restart"}');
         });
 
         $('#panic').click(function (event) {
-            return emit('sio_panic');
+            ws.send('{"action" : "sio_panic"}');
         });
 
         $('#query').click(function (event) {
-            return emit('sio_query');
+            ws.send('{"action" : "sio_query"}');
         });
 
         $('#quit').click(function (event) {
-            return emit('sio_quit');
+            ws.send('{"action" : "sio_quit"}');
         });
-
-        function emit(route, data = null) {
-            if (data == null)
-                socket.emit(route);
-            else
-                socket.emit(route, data);
-            return false;
-        }
-        */
     });
 </script>
 {% endblock websockets %}
