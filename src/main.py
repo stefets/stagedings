@@ -5,27 +5,44 @@
 
 import os
 import json
+import time
+import asyncio
 from typing import Union
-from threading import Lock
 from services.live import LiveContext
 from fastapi import (
     Request,
-    Cookie,
-    Depends,
     FastAPI,
-    Query,
     WebSocket,
+    BackgroundTasks,
     WebSocketException,
-    status,
+    WebSocketDisconnect,
 )
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-#from fastapi_socketio import SocketManager
-
 app = FastAPI()
-#sm = SocketManager(app=app)
+
+class ConnectionManager:
+    def __init__(self):
+        self.active_connections: list[WebSocket] = []
+
+    async def connect(self, websocket: WebSocket):
+        await websocket.accept()
+        self.active_connections.append(websocket)
+
+    async def disconnect(self, websocket: WebSocket):
+        self.active_connections.remove(websocket)
+
+    async def send_personal_message(self, message: str, websocket: WebSocket):
+        await websocket.send_text(message)
+
+    async def broadcast(self, payload):
+        for connection in self.active_connections:
+            await connection.send_json(payload)
+
+
+manager = ConnectionManager()
 
 """  Configuration """
 
@@ -37,18 +54,21 @@ config = os.path.join('static', 'config.json')
 with open(config) as FILE:
     settings = json.load(FILE)
 
-thread = None
-thread_lock = Lock()    
 
 ''' Mididings and OSC context '''
 live_context = LiveContext(
     settings["osc_server"])
 
-'''
-    Api routes
-'''
+
+async def osc_observer_thread():
+    while True:
+        await manager.broadcast({
+                "action" : "on_start" if await live_context.is_running() else "on_exit"
+        })
+        await asyncio.sleep(0.125)
 
 
+''' API Homepage '''
 @app.get("/", response_class=HTMLResponse)
 async def index(request : Request):
     context = {
@@ -59,151 +79,95 @@ async def index(request : Request):
     )
 
 
+''' Scene and subscene presentation'''
 @app.get("/ui", response_class=HTMLResponse)
-async def ui(request : Request):
+async def ui(request : Request, background_tasks: BackgroundTasks):
     context = {
         "request": request
     }
+
+    if not background_tasks.tasks:
+        print("Create observer")
+        background_tasks.add_task(osc_observer_thread)
+
     return templates.TemplateResponse(
-        name="ui.html", context=context
+        name="ui.html" if live_context.scene_context.scenes else "no_context.html", context=context
     )
 
-@app.get("/next_scene")
-def api_next_scene():
-    next_scene()
+''' REST handler '''
+@app.get("/api/")
+async def api(action : str, payload : int = 0):
+    if action in mididings_actions:
+        await mididings_actions[action]() if payload == 0 else await mididings_actions[action](payload)
     return '', 204
+    
 
-
-@app.get("/prev_scene")
-def api_prev_scene():
-    prev_scene()
-    return '', 204
-
-
-@app.get("/next_subscene")
-def api_next_subscene():
-    next_subscene()
-    return '', 204
-
-
-@app.get("/prev_subscene")
-def api_prev_subscene():
-    prev_subscene()
-    return '', 204
-
-
-@app.get("/switch_scene/{id}")
-def api_switch_scene(id : int):
-    switch_scene(id)
-    return '', 204
-
-
-@app.get("/switch_subscene/{id}")
-def api_switch_subscene(id : int):
-    switch_subscene(id)
-    return '', 204
-
-
-@app.get("/quit")
-def api_quit():
-    quit()
-    return '', 204
-
-
-@app.get("/panic")
-def api_panic():
-    panic()
-    return '', 204
-
-
-@app.get("/restart")
-def api_restart():
-    restart()
-    return '', 204
-
-''' Websockets event routes '''
-
+''' Websockets handler '''
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await websocket.accept()
-    while True:
-        data = await websocket.receive_json()
-        action = data['action']
-        print(data['action'])
-        if action == "sio_get_mididings_context":
-            await mididings_context_update()
-            await websocket.send_json({
-                "action" : "mididings_context_update",
-                "payload" : live_context.scene_context.payload
-            })
+    await manager.connect(websocket)
+    try:
+        while True:
+            data = await websocket.receive_json()
 
-        elif action == "sio_quit":
-            quit()
-            await websocket.send_json({
-                "action" : "on_terminate",
-            })
-        elif action == "sio_next_scene":
-            next_scene()
-        elif action == "sio_prev_scene":
-            prev_scene()
-        elif action == "sio_next_subscene":
-            next_subscene()
-        elif action == "sio_prev_subscene":
-            prev_subscene()
-        elif action == "sio_restart":
-            restart()
-        elif action == "sio_panic":
-            panic()
-        elif action == "sio_query":
-            query()
-        elif action == "sio_switch_scene":
-            switch_scene(int(data['id']))
-        elif action == "sio_switch_subscene":
-            switch_subscene(int(data['id']))
+            action = data['action']
 
+            if action in mididings_actions:
+                await mididings_actions[action]() if not "payload" in data else await mididings_actions[action](int(data['payload']))
+
+            if action in logic_actions:
+                await logic_actions[action](websocket)
+
+            if live_context.is_dirty:
+                await logic_actions["on_refresh"](websocket)
+
+    except WebSocketDisconnect:
+        await manager.disconnect(websocket)
+
+    except asyncio.exceptions.CancelledError:
+        print("------------------------CancelledError")
+
+    finally:
+        print("exit")
 
 
 ''' API calls  '''
 
-async def mididings_context_update():
-    live_context.set_dirty(False)
+async def on_refresh(websocket : WebSocket):
+    time.sleep(0.125)   # This is mandatory to let time for mididings to process changes before re-render
+    await manager.broadcast({
+            "action" : "on_refresh",
+            "payload" : live_context.scene_context.payload
+    })
+    await live_context.set_dirty(False)
 
 
-def quit():
-    live_context.quit()
+async def on_quit(websocket : WebSocket):
+    await websocket.send_json({
+        "action" : "on_terminate",
+    })
 
 
-def panic():
-    live_context.panic()
+async def on_connect(websocket : WebSocket):
+    await live_context.set_dirty(True)
 
 
-def query():
-    live_context.query()
+mididings_actions = {
+    "next_scene" : live_context.next_scene,
+    "next_subscene" : live_context.next_subscene,
+    "prev_scene" : live_context.prev_scene,
+    "prev_subscene" : live_context.prev_subscene,
+    "switch_scene" : live_context.switch_scene,
+    "switch_subscene" : live_context.switch_subscene,
+    "restart" : live_context.restart,
+    "panic" : live_context.panic,
+    "query" : live_context.query,
+    "quit" : live_context.quit,
+}
 
 
-def restart():
-    live_context.restart()
-
-
-def next_subscene():
-    live_context.next_subscene()
-
-
-def next_scene():
-    live_context.next_scene()
-
-
-def prev_subscene():
-    live_context.prev_subscene()
-
-
-def prev_scene():
-    live_context.prev_scene()
-
-
-def switch_scene(id : int):
-    live_context.switch_scene(id)
-
-
-def switch_subscene(id : int):
-    live_context.switch_subscene(id)
+logic_actions = {
+    "on_connect": on_connect,
+    "on_refresh": on_refresh,
+    "quit" : on_quit,
+}
