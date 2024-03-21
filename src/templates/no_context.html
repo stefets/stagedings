@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block body %}
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 bg-danger">
+      Error : No frontend to render<br>
+      Reason : No scenes to load
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-6 bg-primary">
+      Check your mididings configuration and click
+      <a href="/ui">retry</a>
+    </div>
+  </div>
+</div>
+{% endblock body %}

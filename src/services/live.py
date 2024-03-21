@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # SPDX-License-Identifier: GPL-2.0-or-later
 
 
@@ -15,43 +18,43 @@ class LiveContext:
         self.scene_context = SceneContext()
         self.server = OscContext(options, self.scene_context)
 
-    def is_dirty(self):
+    def is_dirty(self) -> bool:
         return self.server.dirty
 
-    def set_dirty(self, value):
+    async def set_dirty(self, value) -> None:
         self.server.dirty = value
 
-    def is_running(self):
+    async def is_running(self) -> bool:
         return self.server.running
 
-    def next_scene(self):
+    async def next_scene(self) -> None:
         self.server.osc.next_scene()
 
-    def next_subscene(self):
+    async def next_subscene(self) -> None:
         self.server.osc.next_subscene()
 
-    def prev_scene(self):
+    async def prev_scene(self) -> None:
         self.server.osc.prev_scene()
 
-    def prev_subscene(self):
+    async def prev_subscene(self) -> None:
         self.server.osc.prev_subscene()
 
-    def panic(self):
+    async def panic(self) -> None:
         self.server.osc.panic()
 
-    def restart(self):
+    async def restart(self) -> None:
         self.server.osc.restart()
 
-    def query(self):
+    async def query(self):
         self.server.osc.query()
 
-    def quit(self):
+    async def quit(self) -> None:
         self.server.osc.quit()
 
-    def switch_scene(self, value):
+    async def switch_scene(self, value) -> None:
         self.server.osc.switch_scene(value)
 
-    def switch_subscene(self, value):
+    async def switch_subscene(self, value) -> None:
         self.server.osc.switch_subscene(value)
 
 
