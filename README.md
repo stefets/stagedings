@@ -1,23 +1,3 @@
-# NOTE : This is a POC to refactor the flaskdings API with FastApi
+# NOTE: This is a transitional repository to refactor the Flaskdings API with FastApi as the backend to replace Flask.
 
-# FastDings
-## A simple and effective API and UI for Mididings community version
-
-# Features
-## Backend
-* An instance of mididings.LiveOSC server
-* Websockets routes and near realtime refresh
-* Standard REST API routes
-## A modern HTML5 frontend as an alternative to the livedings UI
-
-# License
-All files in this repository are released under the terms of the GNU
-General Public License as published by the Free Software Foundation;
-either version 2 of the License, or (at your option) any later version.
-
-For more details, please read the LICENSE file.
-
-# Mididings community version ressources
-* https://www.github.com/mididings/mididings
-* https://mididings.github.io/mididings/
-* https://groups.google.com/g/mididings
+## UPDATE 2024-12-23: This repository also serves to be properly configured before being offered to the mididings organization (community version) who will maintain and support the UI in the future.
