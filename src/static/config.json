@@ -3,8 +3,5 @@
    {
       "control_port" :56418,
       "listen_port" : 56419
-   },
-   "secret_key" : "15736ce9-781f-4019-a1ba-87ec8e373beb",
-   "port" : 5555,
-   "host" : "0.0.0.0"
+   }
 }
