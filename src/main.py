@@ -103,7 +103,7 @@ async def websocket_endpoint(websocket: WebSocket):
 
             try:
                 # Handle incoming messages from the client
-                data = await asyncio.wait_for(websocket.receive_json(), timeout=0.125)
+                data = await asyncio.wait_for(websocket.receive_json(), timeout=0.1)
                 action = data["action"]
 
                 if action in mididings_actions:
