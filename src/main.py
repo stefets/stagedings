@@ -12,8 +12,25 @@ from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.openapi.docs import get_swagger_ui_html
 
-app = FastAPI()
+description = """
+### You will be able to:
+
+* **Control mididings**
+* **Navigating Scenes and Subscenes**
+"""
+
+app = FastAPI(
+    title="Fastdings",
+    version="0.0.1",
+    description=description,
+    summary="The UI/API for mididings community version.",
+    contact={
+        "name": "Fastdings",
+        "url": "https://github.com/mididings/fastdings"
+    }
+)
 
 
 class ConnectionManager:
@@ -55,75 +72,70 @@ async def mididings_context_update():
         {"action": "mididings_context_update", "payload": logic.scene_context.payload}
     )
 
-
-@app.get("/", tags=["UI"], response_class=HTMLResponse)
+# UI enpoints
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def index(request: Request):
     return templates.TemplateResponse(name="index.html", context={"request": request})
 
 
-@app.get("/ui", tags=["UI"], response_class=HTMLResponse)
+@app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
 async def ui(request: Request):
     return templates.TemplateResponse(
         name="ui.html" if logic.scene_context.scenes else "no_context.html",
         context={"request": request},
     )
 
-
-# Endpoints (router)
-@app.get("/api/panic", tags=["Control"], responses={204: {"description": "No content"}})
-async def panic():
-    await logic.panic()
-    return Response(status_code=204)
-
-@app.get("/api/query", tags=["Control"], responses={204: {"description": "No content"}})
-async def query():
-    await logic.query()
-    return Response(status_code=204)
-
-@app.get("/api/quit", tags=["Control"], responses={204: {"description": "No content"}})
-async def quit():
-    await logic.quit()
-    return Response(status_code=204)
-
-@app.get("/api/restart", tags=["Control"], responses={204: {"description": "No content"}})
-async def restart():
-    await logic.restart()
-    return Response(status_code=204)
-
-#
 # Navigation endpoints
-#
-@app.get("/api/next_scene", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def next_scene():
-    await logic.next_scene()
-    return Response(status_code=204)    
-
-
-@app.get("/api/prev_scene", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def prev_scene():
-    await logic.prev_scene()
-    return Response(status_code=204)
-
-@app.get("/api/switch_scene/{id}", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/api/switch_scene/{id}", summary="Switch to the given scene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
 async def switch_scene_endpoint(id: int):
     await logic.switch_scene(id)
     return Response(status_code=204)
 
-@app.get("/api/next_subscene", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def next_subscene():
-    await logic.next_subscene()
-    return Response(status_code=204)    
-
-@app.get("/api/prev_subscene", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def prev_subscene():
-    await logic.prev_subscene()
-    return Response(status_code=204)
-
-@app.get("/api/switch_subscene/{id}", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/api/switch_subscene/{id}", summary="Switch to the given subscene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
 async def switch_subscene_endpoint(id: int):
     await logic.switch_subscene(id)
     return Response(status_code=204)
 
+@app.get("/api/prev_scene", summary="Switch to the previous scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def prev_scene():
+    await logic.prev_scene()
+    return Response(status_code=204)
+
+@app.get("/api/next_scene", summary="Switch to the next scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def next_scene():
+    await logic.next_scene()
+    return Response(status_code=204)    
+
+@app.get("/api/prev_subscene", summary="Switch to the previous subscene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def prev_subscene():
+    await logic.prev_subscene()
+    return Response(status_code=204)
+
+@app.get("/api/next_subscene", summary="Switch to the next subscene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def next_subscene():
+    await logic.next_subscene()
+    return Response(status_code=204)    
+
+# Control endpoints
+@app.get("/api/panic", summary="Send all-notes-off on all channels and on all output ports.", tags=["Control"], responses={204: {"description": "No content"}})
+async def panic():
+    await logic.panic()
+    return Response(status_code=204)
+
+@app.get("/api/quit", summary="Terminate mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+async def quit():
+    await logic.quit()
+    return Response(status_code=204)
+
+@app.get("/api/restart", summary="Restart mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+async def restart():
+    await logic.restart()
+    return Response(status_code=204)
+
+@app.get("/api/query", summary="Send config, current scene/subscene to all notify ports.", tags=["Control"], responses={204: {"description": "No content"}})
+async def query():
+    await logic.query()
+    return Response(status_code=204)
 
 """ Websocket handler """
 
