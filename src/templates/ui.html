@@ -239,7 +239,7 @@
             $("#scenes").delegate("input.switch_scene", "click", function (event) {
                 socket.send(JSON.stringify({
                     action: "switch_scene",
-                    payload: $(this).attr('name')
+                    id: $(this).attr('name')
                 }));
             });
 
@@ -247,7 +247,7 @@
             $("#subscenes").delegate("input.switch_subscene", "click", function (event) {
                 socket.send(JSON.stringify({
                     action: "switch_subscene",
-                    payload: $(this).attr('name')
+                    id: $(this).attr('name')
                 }));
             });
 

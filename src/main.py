@@ -143,8 +143,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 if action in delegates:
                     (
                         await delegates[action]()
-                        if not "payload" in data
-                        else await delegates[action](int(data["payload"]))
+                        if not "id" in data
+                        else await delegates[action](int(data["id"]))
                     )
 
             except asyncio.TimeoutError:
