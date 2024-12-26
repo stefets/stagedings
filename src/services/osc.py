@@ -12,8 +12,8 @@ import liblo
 from mididings.live.osc_control import LiveOSC
 
 
-class OscLogic:
-    def __init__(self, config, scene_context):
+class OscService:
+    def __init__(self, config, scene_service):
 
         self.server = LiveOSC(
             self, config["control_port"], config["listen_port"])
@@ -21,7 +21,7 @@ class OscLogic:
         self.dirty = False
         self.running = False
 
-        self.scene_context = scene_context
+        self.scene_service = scene_service
 
         self.server.start()
         self.server.query()
@@ -31,17 +31,17 @@ class OscLogic:
     '''Data offset'''
 
     def set_data_offset(self, data_offset):
-        self.scene_context.data_offset = data_offset
+        self.scene_service.data_offset = data_offset
 
     '''Scenes dictionary'''
 
     def set_scenes(self, scenes):
-        self.scene_context.set_scenes(scenes)
+        self.scene_service.set_scenes(scenes)
 
     '''This is the last OSC operation from /query'''
 
     def set_current_scene(self, cur_scene, cur_subscene):
-        self.scene_context.set_current_scene(cur_scene, cur_subscene)
+        self.scene_service.set_current_scene(cur_scene, cur_subscene)
 
         self.dirty = True
         self.running = True
