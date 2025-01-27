@@ -13,25 +13,35 @@ from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.openapi.docs import get_swagger_ui_html
+from fastapi.openapi.utils import get_openapi
 
 description = """
 ### You will be able to:
 
-* **Control mididings**
 * **Navigating Scenes and Subscenes**
+* **Control mididings**
 """
 
-app = FastAPI(
-    title="Fastdings",
-    version="0.0.1",
-    description=description,
-    summary="The UI/API for mididings community version.",
-    contact={
-        "name": "Fastdings",
-        "url": "https://github.com/mididings/fastdings"
+app = FastAPI()
+
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    openapi_schema = get_openapi(
+        title="stagedings",
+        version="0.0.1",
+        summary="The UI & API for mididings community version.",
+        description=description,
+        routes=app.routes,
+        openapi_version="3.0.0",
+    )
+    openapi_schema["info"]["x-logo"] = {
+        "url": "https://avatars.githubusercontent.com/u/121540801?s=400&u=2d3daf12927631aecd807b2d6dfb90652cc22ae8&v=4"
     }
-)
+    app.openapi_schema = openapi_schema
+    return app.openapi_schema
+
+app.openapi = custom_openapi    
 
 
 """  Configuration """
