@@ -27,18 +27,17 @@ app = FastAPI()
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema
-    openapi_schema = get_openapi(
+    app.openapi_schema = get_openapi(
         title="stagedings",
         version="0.0.1",
-        summary="The UI & API for mididings community version.",
+        summary="The UI & API for mididings community version",
         description=description,
         routes=app.routes,
         openapi_version="3.0.0",
     )
-    openapi_schema["info"]["x-logo"] = {
+    app.openapi_schema["info"]["x-logo"] = {
         "url": "https://avatars.githubusercontent.com/u/121540801?s=400&u=2d3daf12927631aecd807b2d6dfb90652cc22ae8&v=4"
     }
-    app.openapi_schema = openapi_schema
     return app.openapi_schema
 
 app.openapi = custom_openapi    
@@ -94,6 +93,7 @@ async def switch_subscene(id: int):
 @app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
 async def prev_scene():
     await manager.prev_scene()
+    await dele
     return Response(status_code=204)
 
 @app.get("/next_scene", summary="Switch to the next scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
