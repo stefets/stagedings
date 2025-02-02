@@ -93,7 +93,6 @@ async def switch_subscene(id: int):
 @app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def prev_scene():
     await manager.prev_scene()
-    await dele
     return Response(status_code=204)
 
 @app.get("/next_scene", summary="Switch to the next scene.", tags=["Scene"], responses={204: {"description": "No content"}})
