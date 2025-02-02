@@ -17,15 +17,14 @@ class ConnectionManager:
             self.active_connections.append(websocket)
 
     def disconnect(self, websocket: WebSocket):
+        if websocket in self.active_connections:
+            print(f"Disconnecting: {websocket.client}")
         try:
-            if websocket in self.active_connections:
-                print(f"Disconnecting: {websocket.client}")
-                self.active_connections.remove(websocket)
+            self.active_connections.remove(websocket)
         except:
-            print("Tried to remove a connection that is not in the list.")
+            pass
 
     async def broadcast(self, message: dict):
-        print(f"Broadcasting to {len(self.active_connections)} connections")
         for websocket in self.active_connections[:]:
             try:
                 await websocket.send_json(message)
