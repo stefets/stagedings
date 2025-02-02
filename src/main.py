@@ -81,13 +81,13 @@ async def ui(request: Request):
     )
 
 # Navigation endpoints
-@app.get("/switch_scene/{id}", summary="Switch to the given scene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def switch_scene_endpoint(id: int):
+@app.get("/switch_scene", summary="Switch to the given scene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def switch_scene(id: int):
     await manager.switch_scene(id)
     return Response(status_code=204)
 
-@app.get("/switch_subscene/{id}", summary="Switch to the given subscene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
-async def switch_subscene_endpoint(id: int):
+@app.get("/switch_subscene", summary="Switch to the given subscene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
+async def switch_subscene(id: int):
     await manager.switch_subscene(id)
     return Response(status_code=204)
 
