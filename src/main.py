@@ -80,33 +80,33 @@ async def ui(request: Request):
     )
 
 # Navigation endpoints
-@app.get("/switch_scene", summary="Switch to the given scene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/switch_scene", summary="Switch to the given scene number.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def switch_scene(id: int):
     await manager.switch_scene(id)
     return Response(status_code=204)
 
-@app.get("/switch_subscene", summary="Switch to the given subscene number.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/switch_subscene", summary="Switch to the given subscene number.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def switch_subscene(id: int):
     await manager.switch_subscene(id)
     return Response(status_code=204)
 
-@app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def prev_scene():
     await manager.prev_scene()
     await dele
     return Response(status_code=204)
 
-@app.get("/next_scene", summary="Switch to the next scene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/next_scene", summary="Switch to the next scene.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def next_scene():
     await manager.next_scene()
     return Response(status_code=204)    
 
-@app.get("/prev_subscene", summary="Switch to the previous subscene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/prev_subscene", summary="Switch to the previous subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def prev_subscene():
     await manager.prev_subscene()
     return Response(status_code=204)
 
-@app.get("/next_subscene", summary="Switch to the next subscene.", tags=["Navigation"], responses={204: {"description": "No content"}})
+@app.get("/next_subscene", summary="Switch to the next subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
 async def next_subscene():
     await manager.next_subscene()
     return Response(status_code=204)    
