@@ -9,13 +9,13 @@
 
             <div class="row mt-1">
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-warning" type="button" id="restart" value="Restart">
+                    <input class="w-100 btn btn-outline-warning" type="button" id="restart" value="Restart">
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-warning" type="button" id="panic" value="Panic">
+                    <input class="w-100 btn btn-outline-warning" type="button" id="panic" value="Panic">
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-primary" type="button" id="query" value="Query">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="query" value="Query">
                 </div>
                 <div class="col-md-3">
                     <input class="w-100 btn btn-danger" type="button" id="quit" value="Quit">
@@ -23,7 +23,7 @@
             </div>
         </div>
 
-        <div class="col-md-8 bg-dark">
+        <div class="col-md-8 bg-light">
             <div class="row">
                 <div class="col-md-10">
                     <h3>
@@ -41,9 +41,9 @@
     <!-- Content -->
     <div class="row mb-1">
         <!-- Liste de scenes -->
-        <div id="scenes" class="col-md-4 bg-secondary"> </div>
+        <div id="scenes" class="col-md-4 bg-light"> </div>
         <!-- Sous-scenes de la scene courante -->
-        <div id="subscenes" class="col-md-8 bg-dark"> </div>
+        <div id="subscenes" class="col-md-8 bg-light"> </div>
     </div>
 
     <!-- Footer -->
@@ -55,17 +55,17 @@
 
             <div class="row">
                 <div class="bg-secondary col-md-4 text-center">
-                    <div class="bg-dark">
+                    <div class="bg-light">
                         Mididings
                     </div>
                 </div>
                 <div class="bg-secondary col-md-4 text-center">
-                    <div class="bg-dark">
+                    <div class="bg-light">
                         FastAPI Server
                     </div>
                 </div>
                 <div class="bg-secondary col-md-4 text-center">
-                    <div class="bg-dark">
+                    <div class="bg-light">
                         This client
                     </div>
                 </div>
@@ -83,19 +83,19 @@
         </div>
 
         <!-- Scene and Sub-Scene navigation -->
-        <div class="col-md-8 bg-dark">
+        <div class="col-md-8 bg-light">
             <div class="row mt-1">
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-info" type="button" id="prev_scene" value="Previous Scene">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="prev_scene" value="Previous Scene">
+                </div>
+                <div class="col-md-3">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="next_scene" value="Next scene">
                 </div>
                 <div class="col-md-3">
                     <input class="w-100 btn btn-primary" type="button" id="prev_subscene" value="Previous Sub-Scene">
                 </div>
                 <div class="col-md-3">
                     <input class="w-100 btn btn-primary" type="button" id="next_subscene" value="Next Sub-Scene">
-                </div>
-                <div class="col-md-3">
-                    <input class="w-100 btn btn-info" type="button" id="next_scene" value="Next scene">
                 </div>
             </div>
         </div>
@@ -113,9 +113,9 @@
 
             socket.onopen = function (event) {
                 socket.send('{"action" : "on_connect"}');
-                $('#client-state').html('<div class="bg-success">ONLINE</div>');
-                $('#mididings-state').html('<div class="bg-success">ONLINE</div>');
-                $('#server-state').html('<div class="bg-success">ONLINE</div>');
+                $('#client-state').html('<div class="card border-success">ONLINE</div>');
+                $('#mididings-state').html('<div class="card border-success">ONLINE</div>');
+                $('#server-state').html('<div class="card border-success">ONLINE</div>');
             }
 
             socket.onmessage = function (event) {
@@ -141,17 +141,17 @@
             }
 
             function start() {
-                $('#mididings-state').html('<div class="bg-success">ONLINE</div>');
+                $('#mididings-state').html('<div class="card border-success">ONLINE</div>');
             }
 
             function exit() {
-                $('#mididings-state').html('<div class="bg-danger">OFFLINE</div>');
+                $('#mididings-state').html('<div class="card border-danger">OFFLINE</div>');
             }
 
             function terminate() {
                 socket.close();
-                $('#client-state').html('<div class="bg-danger">OFFLINE</div>');
-                $('#mididings-state').html('<div class="bg-danger">OFFLINE</div>');
+                $('#client-state').html('<div class="card border-danger">OFFLINE</div>');
+                $('#mididings-state').html('<div class="card border-danger">OFFLINE</div>');
             }
 
             function refresh(context) {
@@ -181,11 +181,11 @@
                     if (scene.current) {
                         $('#current_scene').text(scene.id);
                         $('#current_scene_name').text(scene.name);
-                        button_class += "btn-light'";
+                        button_class += "btn-info'";
                         subscenes = scene.subscenes;
                     }
                     else
-                        button_class += "btn-dark'";
+                        button_class += "btn-outline-dark'";
 
                     content += "<div class='col-md-6'>";
                     content += "<input class=" + button_class + " type='button' name='" + scene.id.toString() + "' value='" + scene.name + "'>";
@@ -215,12 +215,12 @@
                     // Button style
                     var button_class = "'w-100 btn btn-block switch_subscene ";
                     if (scene.current) {
-                        button_class += "btn-light'";
+                        button_class += "btn-info'";
                         $('#current_subscene').text(scene.id);
                         $('#current_subscene_name').text(scene.name);
                     }
                     else
-                        button_class += "btn-secondary'";
+                        button_class += "btn-outline-dark'";
 
                     content += "<div class='col-md-3'>";
                     content += "<input class=" + button_class + " type='button' name='" + scene.id.toString() + "' value='" + scene.name + "'>";
@@ -232,7 +232,6 @@
                         content += "</div>";
                 }
                 $('#subscenes').append(content);
-
             }
 
             // Scene navigation delegate
