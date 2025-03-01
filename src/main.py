@@ -138,7 +138,7 @@ async def query():
 async def websocket_endpoint(websocket: WebSocket):
     await connection_manager.connect(websocket)
     try:
-        while True:
+        while websocket in connection_manager.active_connections:
             # Send status periodic task
             await connection_manager.broadcast(
                 {"action": "on_start" if await manager.is_running() else "on_exit"}
@@ -148,14 +148,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 # Handle incoming messages from the client
                 data = await asyncio.wait_for(websocket.receive_json(), timeout=0.1)
                 action = data["action"]
-
                 if action in delegates:
                     (
                         await delegates[action]()
                         if not "id" in data
                         else await delegates[action](int(data["id"]))
                     )
-
             except asyncio.TimeoutError:
                 # No message received during the timeout, continue the loop
                 pass
@@ -164,9 +162,12 @@ async def websocket_endpoint(websocket: WebSocket):
                 await delegates["mididings_context_update"]()
 
     except WebSocketDisconnect:
-        await connection_manager.disconnect(websocket)
+        connection_manager.disconnect(websocket)        
     except asyncio.exceptions.CancelledError:
-        print("------------------------CancelledError")
+        print("asyncio CancelledError exception")
+    except Exception as e:
+        print(f"Unexpected WebSocket error: {e}")
+        connection_manager.disconnect(websocket)        
     finally:
         print("exit")
 
