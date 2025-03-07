@@ -1,5 +1,5 @@
 # stagedings
-### Features an UI and and a REST API for the mididings community version.
+### Features an UI and a REST API for the mididings community version.
 
 ##### Both features use the mididings OSC interface
 
