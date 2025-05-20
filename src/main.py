@@ -6,33 +6,42 @@
 import os
 import json
 import asyncio
-from services.logic import LogicService
+from services.manager import ManagerService
+from services.connection import ConnectionManager
 
-from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect, Response
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from fastapi.openapi.utils import get_openapi
+
+description = """
+### You will be able to:
+
+* **Navigating Scenes and Subscenes**
+* **Control mididings**
+"""
 
 app = FastAPI()
 
+def custom_openapi():
+    if app.openapi_schema:
+        return app.openapi_schema
+    app.openapi_schema = get_openapi(
+        title="stagedings",
+        version="0.0.1",
+        summary="The UI & API for mididings community version",
+        description=description,
+        routes=app.routes,
+        openapi_version="3.0.0",
+    )
+    app.openapi_schema["info"]["x-logo"] = {
+        "url": "https://avatars.githubusercontent.com/u/121540801?s=400&u=2d3daf12927631aecd807b2d6dfb90652cc22ae8&v=4"
+    }
+    return app.openapi_schema
 
-class ConnectionManager:
-    def __init__(self):
-        self.active_connections: list[WebSocket] = []
+app.openapi = custom_openapi    
 
-    async def connect(self, websocket: WebSocket):
-        await websocket.accept()
-        self.active_connections.append(websocket)
-
-    async def disconnect(self, websocket: WebSocket):
-        self.active_connections.remove(websocket)
-
-    async def broadcast(self, payload):
-        for connection in self.active_connections:
-            await connection.send_json(payload)
-
-
-manager = ConnectionManager()
 
 """  Configuration """
 
@@ -41,121 +50,157 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
 
 config = os.path.join("static", "config.json")
-with open(config) as FILE:
+with open(config) as FILE:  
     configuration = json.load(FILE)
 
 
-""" Mididings and OSC context """
-logic = LogicService(configuration["osc_server"])
+# Mididings and OSC context
+manager = ManagerService(configuration["osc_server"])
 
+# WebSocket connection manager
+connection_manager = ConnectionManager()
 
 async def mididings_context_update():
-    await logic.set_dirty(False)
-    await manager.broadcast(
-        {"action": "mididings_context_update", "payload": logic.scene_context.payload}
+    await manager.set_dirty(False)
+    await connection_manager.broadcast(
+        {"action": "mididings_context_update", "payload": manager.scene_service.payload}
     )
 
-
-"""
-    REST API endpoints
-"""
-
-
-@app.get("/", response_class=HTMLResponse)
+# UI enpoints
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
 async def index(request: Request):
     return templates.TemplateResponse(name="index.html", context={"request": request})
 
 
-@app.get("/ui", response_class=HTMLResponse)
+@app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
 async def ui(request: Request):
     return templates.TemplateResponse(
-        name="ui.html" if logic.scene_context.scenes else "no_context.html",
+        name="ui.html" if manager.scene_service.scenes else "no_context.html",
         context={"request": request},
     )
 
+# Navigation endpoints
+@app.get("/switch_scene", summary="Switch to the given scene number.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def switch_scene(id: int):
+    await manager.switch_scene(id)
+    return Response(status_code=204)
 
-@app.get("/api/", status_code=204)
-async def api(action: str, payload: int = 0):
-    if action in mididings_actions:
-        (
-            await mididings_actions[action]()
-            if payload == 0
-            else await mididings_actions[action](payload)
-        )
-    return ""
+@app.get("/switch_subscene", summary="Switch to the given subscene number.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def switch_subscene(id: int):
+    await manager.switch_subscene(id)
+    return Response(status_code=204)
 
+@app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def prev_scene():
+    await manager.prev_scene()
+    return Response(status_code=204)
+
+@app.get("/next_scene", summary="Switch to the next scene.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def next_scene():
+    await manager.next_scene()
+    return Response(status_code=204)    
+
+@app.get("/prev_subscene", summary="Switch to the previous subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def prev_subscene():
+    await manager.prev_subscene()
+    return Response(status_code=204)
+
+@app.get("/next_subscene", summary="Switch to the next subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
+async def next_subscene():
+    await manager.next_subscene()
+    return Response(status_code=204)    
+
+# Control endpoints
+@app.get("/panic", summary="Send all-notes-off on all channels and on all output ports.", tags=["Control"], responses={204: {"description": "No content"}})
+async def panic():
+    await manager.panic()
+    return Response(status_code=204)
+
+@app.get("/quit", summary="Terminate mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+async def quit():
+    await manager.quit()
+    return Response(status_code=204)
+
+@app.get("/restart", summary="Restart mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+async def restart():
+    await manager.restart()
+    return Response(status_code=204)
+
+@app.get("/query", summary="Send config, current scene/subscene to all notify ports.", tags=["Control"], responses={204: {"description": "No content"}})
+async def query():
+    await manager.query()
+    return Response(status_code=204)
 
 """ Websocket handler """
 
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    await manager.connect(websocket)
+    await connection_manager.connect(websocket)
     try:
-        while True:
+        while websocket in connection_manager.active_connections:
             # Send status periodic task
-            await manager.broadcast(
-                {"action": "on_start" if await logic.is_running() else "on_exit"}
+            await connection_manager.broadcast(
+                {"action": "on_start" if await manager.is_running() else "on_exit"}
             )
-
-            if await logic.is_dirty():
-                await logic_actions["mididings_context_update"]()
 
             try:
                 # Handle incoming messages from the client
-                data = await asyncio.wait_for(websocket.receive_json(), timeout=0.125)
+                data = await asyncio.wait_for(websocket.receive_json(), timeout=0.1)
                 action = data["action"]
-
-                if action in mididings_actions:
+                if action in delegates:
                     (
-                        await mididings_actions[action]()
-                        if not "payload" in data
-                        else await mididings_actions[action](int(data["payload"]))
+                        await delegates[action]()
+                        if not "id" in data
+                        else await delegates[action](int(data["id"]))
                     )
-
-                if action in logic_actions:
-                    await logic_actions[action](websocket)
-
             except asyncio.TimeoutError:
                 # No message received during the timeout, continue the loop
                 pass
+
+            if await manager.is_dirty():
+                await delegates["mididings_context_update"]()
+
     except WebSocketDisconnect:
-        await manager.disconnect(websocket)
+        connection_manager.disconnect(websocket)        
     except asyncio.exceptions.CancelledError:
-        print("------------------------CancelledError")
+        print("asyncio CancelledError exception")
+    except Exception as e:
+        print(f"Unexpected WebSocket error: {e}")
+        connection_manager.disconnect(websocket)        
     finally:
         print("exit")
 
 
-async def on_quit(websocket: WebSocket):
-    await manager.broadcast(
+async def on_quit(websocket: WebSocket = None):
+    await connection_manager.broadcast(
         {
             "action": "on_terminate",
         }
     )
 
 
-async def on_connect(websocket: WebSocket):
-    await logic.set_dirty(True)
+async def on_connect(websocket: WebSocket = None):
+    await manager.set_dirty(True)
 
 
-mididings_actions = {
-    "quit": logic.quit,
-    "panic": logic.panic,
-    "query": logic.query,
-    "restart": logic.restart,
-    "next_scene": logic.next_scene,
-    "prev_scene": logic.prev_scene,
-    "switch_scene": logic.switch_scene,
-    "next_subscene": logic.next_subscene,
-    "prev_subscene": logic.prev_subscene,
-    "switch_subscene": logic.switch_subscene,
-    "get_mididings_context": mididings_context_update,
-}
+delegates = {
 
-
-logic_actions = {
     "on_connect": on_connect,
-    "quit": on_quit,
+
+    "quit": manager.quit,
+    "panic": manager.panic,
+    "query": manager.query,
+    "restart": manager.restart,
+
+    "next_scene": manager.next_scene,
+    "prev_scene": manager.prev_scene,
+    "next_subscene": manager.next_subscene,
+    "prev_subscene": manager.prev_subscene,
+
+    "switch_scene": manager.switch_scene,
+    "switch_subscene": manager.switch_subscene,
+
     "mididings_context_update": mididings_context_update,
+    
 }

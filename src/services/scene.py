@@ -7,9 +7,10 @@
 '''
     Scene logic
 '''
+from pydantic import BaseModel
+from typing import List, Optional
 
-
-class SceneLogic:
+class SceneService:
     def __init__(self) -> None:
         self.data_offset = -1
         self.scenes = []
@@ -23,11 +24,11 @@ class SceneLogic:
         ''' Dictionary (int scene_id: tuple(str scene_name, list subscenes))'''
         self.scenes = []
         for key, scene_item in scenes.items():
-            scene = SceneDto(key, scene_item[0])
+            scene = Scene(id=key, name=scene_item[0])
             index = 0
             for subscene_name in scene_item[1]:
                 index += 1
-                scene.subscenes.append(SubSceneDto(index, subscene_name))
+                scene.subscenes.append(SubScene(id=index, name=subscene_name))
 
             self.scenes.append(scene)
 
@@ -57,18 +58,14 @@ class SceneLogic:
         self.payload = {"items": items}
 
 
-class SceneBaseDto:
-    def __init__(self, id, name) -> None:
-        self.id = id
-        self.name = name
+class SceneBase(BaseModel):
+    id: int
+    name: str
 
 
-class SceneDto(SceneBaseDto):
-    def __init__(self, id, name) -> None:
-        super().__init__(id, name)
-        self.subscenes = []
+class SubScene(SceneBase):
+    pass
 
 
-class SubSceneDto(SceneBaseDto):
-    def __init__(self, id, name) -> None:
-        super().__init__(id, name)
+class Scene(SceneBase):
+    subscenes: List[SubScene] = []
