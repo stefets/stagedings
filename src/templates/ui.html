@@ -112,7 +112,7 @@
         <script type="text/javascript" charset="utf-8">
             $(document).ready(function () {
 
-                var socket = new WebSocket("ws://localhost:5556/ws");
+                var socket = new WebSocket("ws://live1.pacificweb.ca:5556/ws");
 
                 socket.onopen = function (event) {
                     socket.send('{"action" : "on_connect"}');
