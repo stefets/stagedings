@@ -1,15 +1,44 @@
-![Status: Active](https://img.shields.io/badge/status-active-brightgreen)
-[![Built with FastAPI](https://img.shields.io/badge/built%20with-FastAPI-0ba360)](https://fastapi.tiangolo.com)
-[![WebSockets Support](https://img.shields.io/badge/feature-WebSockets-yellowgreen)](https://fastapi.tiangolo.com/advanced/websockets/)
+# stagedings
 
+![Status: Active](https://img.shields.io/badge/status-active-brightgreen)
+[![Backend: FastAPI](https://img.shields.io/badge/backend-FastAPI-blue)](https://fastapi.tiangolo.com/)
+[![Real-time: WebSockets](https://img.shields.io/badge/real--time-WebSockets-orange)](https://fastapi.tiangolo.com/advanced/websockets/)
+[![Protocol: OSC](https://img.shields.io/badge/protocol-OSC-purple)](http://opensoundcontrol.org/)
+[![Control: MIDI](https://img.shields.io/badge/control-MIDI-yellow)](https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message)
+[![OpenAPI Spec](https://img.shields.io/badge/OpenAPI-available-brightgreen)](https://swagger.io/specification/)
+![Clients: Multiple](https://img.shields.io/badge/clients-multiple-lightgrey)
+
+### **stagedings** is the next-generation web UI and API to navigate scenes and subscenes in [mididings](https://github.com/mididings/mididings)
 > 🚧 **NOTE: This project is scheduled to be moved to the [mididings](https://github.com/mididings) GitHub organization.**  
 > Please star or watch the repo to stay updated on the move.
 
+---
+> ⚠️ **Important:**  
+> stagedings requires a **mididings scene patch dictionary** defined in the `run` section of your mididings script to work correctly.  
+> See the mididings documentation on the [`run` section here](https://mididings.github.io/mididings/main.html#mididings.run) for how to structure your patch.
 
-# stagedings
-### Features an UI and a REST API for the mididings community version.
+> ⚠️ **Note for legacy mididings users:**  
+> stagedings is designed to **replace the old `livedings` UI**, which was based on Tkinter.  
+> It offers a modern, web-based interface with enhanced flexibility and real-time control capabilities.
+ 
+## 📸 UI Preview
 
-##### Both features use the mididings OSC interface
+A responsive, real-time interface for scene/subscene navigation in mididings.
+
+<img src="docs/stagedings-ui.png" alt="stagedings UI screenshot" width="700"/>
+
+
+---
+
+## 🚀 Features
+
+- Web UI with real-time scene/subscene updates
+- FastAPI backend with full REST and WebSocket support
+- Multiple clients supported
+- Use the mididings OSC interface
+- It exposes a **fully compliant OpenAPI spec** for easy generation of SDK clients in any language, enabling flexible remote control of mididings.
+
+---
 
 ### The UI interface allow
 * Direct navigation through scenes and subscenes
@@ -20,7 +49,6 @@
 * Endoints to the Restart, Panic, Query and Quit commands
 
 ### Dependencies 
-##### See the WIKI for more details
 * mididings community
 * liblo
 * pyliblo
