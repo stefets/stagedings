@@ -17,6 +17,11 @@
     {% block body %}{% endblock %}
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/jquery-3.7.1.slim.min.js"></script>
+    <script>
+        window.STAGEDINGS_CONFIG = {
+        wsHost: "{{ ws_host }}"
+    };
+    </script>
     {% block websockets %}{% endblock websockets %}
 </body>
 
