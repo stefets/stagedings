@@ -5,7 +5,6 @@
 
 import os
 import json
-import socket
 import asyncio
 from services.manager import ManagerService
 from services.connection import ConnectionManager
