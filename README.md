@@ -8,7 +8,7 @@
 [![OpenAPI Spec](https://img.shields.io/badge/OpenAPI-available-brightgreen)](https://swagger.io/specification/)
 ![Clients: Multiple](https://img.shields.io/badge/clients-multiple-lightgrey)
 
-### **stagedings** is the next-generation web UI and API to navigate scenes and subscenes in [mididings](https://github.com/mididings/mididings)
+### **stagedings** is a web UI and API to navigate scenes and subscenes that has been configured in your [mididings](https://github.com/mididings/mididings) script.
 > 🚧 **NOTE: This project is scheduled to be moved to the [mididings](https://github.com/mididings) GitHub organization.**  
 > Please star or watch the repo to stay updated on the move.
 
@@ -53,6 +53,7 @@ A responsive, real-time interface for scene/subscene navigation in mididings.
 * liblo
 * pyliblo
 * fastapi
+* python-dotenv
 
 ### 💬 Feedback & Contributions
 We welcome bug reports, feature ideas, and contributions! Please open an issue or discussion.

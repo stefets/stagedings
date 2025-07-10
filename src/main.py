@@ -14,6 +14,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.utils import get_openapi
+from dotenv import load_dotenv
 
 description = """
 ### You will be able to:
@@ -60,6 +61,9 @@ manager = ManagerService(configuration["osc_server"])
 # WebSocket connection manager
 connection_manager = ConnectionManager()
 
+# Load environment variables
+load_dotenv()
+
 async def mididings_context_update():
     await manager.set_dirty(False)
     await connection_manager.broadcast(
@@ -74,9 +78,13 @@ async def index(request: Request):
 
 @app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
 async def ui(request: Request):
+    ws_host = os.getenv("STAGEDINGS_WS_HOST", "localhost")
     return templates.TemplateResponse(
         name="ui.html" if manager.scene_service.scenes else "no_context.html",
-        context={"request": request},
+        context={
+            "request": request,
+            "ws_host": ws_host,
+        },
     )
 
 # Navigation endpoints

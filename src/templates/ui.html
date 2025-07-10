@@ -112,7 +112,8 @@
         <script type="text/javascript" charset="utf-8">
             $(document).ready(function () {
 
-                var socket = new WebSocket("ws://live1.pacificweb.ca:5556/ws");
+                let scheme = window.location.protocol === "https:" ? "wss" : "ws";
+                let socket = new WebSocket(`${scheme}://${window.STAGEDINGS_CONFIG.wsHost}/ws`);
 
                 socket.onopen = function (event) {
                     socket.send('{"action" : "on_connect"}');
