@@ -8,7 +8,6 @@
 '''
 
 
-import pyliblo3
 from mididings.live.osc_control import LiveOSC
 
 
