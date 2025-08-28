@@ -48,8 +48,8 @@ A responsive, real-time interface for scene/subscene navigation in mididings.
 
 ### The REST API expose
 
-* Endoints for direct navigation through scenes and subscenes
-* Endoints to the Restart, Panic, Query and Quit commands
+* Endpoints for direct navigation through scenes and subscenes
+* Endpoints to the Restart, Panic, Query and Quit commands
 
 ---
 
