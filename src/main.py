@@ -30,7 +30,7 @@ def custom_openapi():
         return app.openapi_schema
     app.openapi_schema = get_openapi(
         title="stagedings",
-        version="0.0.1",
+        version="0.1.1",
         summary="The UI & API for mididings community version",
         description=description,
         routes=app.routes,
@@ -88,53 +88,100 @@ async def ui(request: Request):
     )
 
 # Navigation endpoints
-@app.get("/switch_scene", summary="Switch to the given scene number.", tags=["Scene"], responses={204: {"description": "No content"}})
-async def switch_scene(id: int):
-    await manager.switch_scene(id)
+# -----
+@app.get("/switch/scene/{scene_id}/subscene/{subscene_id}", 
+    description="Switch to the given scene and subscene number.", 
+    summary="Switch to the given scene and subscene number.", 
+    tags=["Scene"], responses={204: {"description": "No content"}}
+)
+async def switch_scene(scene_id: int, subscene_id: int):
+    await manager.switch_scene(scene_id)
+    await manager.switch_subscene(subscene_id)
     return Response(status_code=204)
 
-@app.get("/switch_subscene", summary="Switch to the given subscene number.", tags=["Scene"], responses={204: {"description": "No content"}})
-async def switch_subscene(id: int):
-    await manager.switch_subscene(id)
+# -----
+@app.get("/switch_scene/{scene_id}", 
+    description="Switch to the given scene number.", 
+    summary="Switch to the given scene number.", 
+    tags=["Scene"], responses={204: {"description": "No content"}}
+)
+async def switch_scene(scene_id: int):
+    await manager.switch_scene(scene_id)
     return Response(status_code=204)
 
-@app.get("/prev_scene", summary="Switch to the previous scene.", tags=["Scene"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/switch_subscene/{subscene_id}", 
+    description="Switch to the given subscene number.", 
+    summary="Switch to the given subscene number.", 
+    tags=["Scene"], responses={204: {"description": "No content"}}
+)
+async def switch_subscene(subscene_id: int):
+    await manager.switch_subscene(subscene_id)
+    return Response(status_code=204)
+
+# -----
+@app.get("/prev_scene", description="Switch to the previous scene.",
+    summary="Switch to the previous scene.", tags=["Scene"], responses={204: {"description": "No content"}}
+)
 async def prev_scene():
     await manager.prev_scene()
     return Response(status_code=204)
 
-@app.get("/next_scene", summary="Switch to the next scene.", tags=["Scene"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/next_scene", description="Switch to the next scene.", 
+         summary="Switch to the next scene.", tags=["Scene"], responses={204: {"description": "No content"}}
+)
 async def next_scene():
     await manager.next_scene()
-    return Response(status_code=204)    
+    return Response(status_code=204)
 
-@app.get("/prev_subscene", summary="Switch to the previous subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/prev_subscene", description="Switch to the previous subscene.", 
+         summary="Switch to the previous subscene.", 
+         tags=["Scene"], responses={204: {"description": "No content"}}
+)
 async def prev_subscene():
     await manager.prev_subscene()
     return Response(status_code=204)
 
-@app.get("/next_subscene", summary="Switch to the next subscene.", tags=["Scene"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/next_subscene", description="Switch to the next subscene.", 
+         summary="Switch to the next subscene.", tags=["Scene"], responses={204: {"description": "No content"}}
+)
 async def next_subscene():
     await manager.next_subscene()
     return Response(status_code=204)    
 
 # Control endpoints
-@app.get("/panic", summary="Send all-notes-off on all channels and on all output ports.", tags=["Control"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/panic", description="Send all-notes-off on all channels and on all output ports.", 
+         summary="Send all-notes-off on all channels and on all output ports.", 
+         tags=["Control"], responses={204: {"description": "No content"}})
 async def panic():
     await manager.panic()
     return Response(status_code=204)
 
-@app.get("/quit", summary="Terminate mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/quit", description="Terminate mididings.", summary="Terminate mididings.", 
+         tags=["Control"], responses={204: {"description": "No content"}}
+)
 async def quit():
     await manager.quit()
     return Response(status_code=204)
 
-@app.get("/restart", summary="Restart mididings.", tags=["Control"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/restart", description="Restart mididings.", summary="Restart mididings.", 
+         tags=["Control"], responses={204: {"description": "No content"}}
+)
 async def restart():
     await manager.restart()
     return Response(status_code=204)
 
-@app.get("/query", summary="Send config, current scene/subscene to all notify ports.", tags=["Control"], responses={204: {"description": "No content"}})
+# -----
+@app.get("/query", description="Send config, current scene/subscene to all notify ports.", 
+         summary="Send config, current scene/subscene to all notify ports.", 
+         tags=["Control"], responses={204: {"description": "No content"}}
+)
 async def query():
     await manager.query()
     return Response(status_code=204)

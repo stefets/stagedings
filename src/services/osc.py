@@ -8,7 +8,6 @@
 '''
 
 
-import liblo
 from mididings.live.osc_control import LiveOSC
 
 
