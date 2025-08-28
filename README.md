@@ -59,7 +59,9 @@ A responsive, real-time interface for scene/subscene navigation in mididings.
 
 * apt-get install liblo-dev
 
-* In the directory where you have cloned stagedings
+* Clone this repository
+
+* In the stagedings/src directory
   
   * Create a .env file
     
