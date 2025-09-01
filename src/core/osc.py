@@ -3,16 +3,15 @@
 
 # SPDX-License-Identifier: GPL-2.0-or-later
 
-'''
-    OSC service
-'''
 
-
+'''
+    OSC control
+'''
 from mididings.live.osc_control import LiveOSC
 
 
-class OscService:
-    def __init__(self, config, scene_service):
+class OscController:
+    def __init__(self, config, _scene_controller):
 
         self.server = LiveOSC(
             self, config["control_port"], config["listen_port"])
@@ -20,7 +19,7 @@ class OscService:
         self.dirty = False
         self.running = False
 
-        self.scene_service = scene_service
+        self.scene_controller = _scene_controller
 
         self.server.start()
         self.server.query()
@@ -30,17 +29,17 @@ class OscService:
     '''Data offset'''
 
     def set_data_offset(self, data_offset):
-        self.scene_service.data_offset = data_offset
+        self.scene_controller.data_offset = data_offset
 
     '''Scenes dictionary'''
 
     def set_scenes(self, scenes):
-        self.scene_service.set_scenes(scenes)
+        self.scene_controller.set_scenes(scenes)
 
     '''This is the last OSC operation from /query'''
 
     def set_current_scene(self, cur_scene, cur_subscene):
-        self.scene_service.set_current_scene(cur_scene, cur_subscene)
+        self.scene_controller.set_current_scene(cur_scene, cur_subscene)
 
         self.dirty = True
         self.running = True

@@ -5,12 +5,11 @@
 
 
 '''
-    Scene logic
+    Scene control
 '''
-from pydantic import BaseModel
-from typing import List, Optional
+from models.base_model import Scene, SubScene
 
-class SceneService:
+class SceneController:
     def __init__(self) -> None:
         self.data_offset = -1
         self.scenes = []
@@ -58,14 +57,3 @@ class SceneService:
         self.payload = {"items": items}
 
 
-class SceneBase(BaseModel):
-    id: int
-    name: str
-
-
-class SubScene(SceneBase):
-    pass
-
-
-class Scene(SceneBase):
-    subscenes: List[SubScene] = []
