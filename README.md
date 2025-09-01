@@ -91,11 +91,11 @@ A responsive, real-time interface for scene/subscene navigation in mididings.
   
   * uvicorn main:app --port 5000 --host 0.0.0.0
 
-* Then navigate to http://server_name:5000
+* Then navigate to http://stagedings.domain.dev:5000
   
   * / for the menu
   * /ui for the frontend
-  * /docs or /redocs for API documentation
+  * /docs or /redoc for API documentation
 
 ### 💬 Feedback & Contributions
 
@@ -105,6 +105,4 @@ We welcome bug reports, feature ideas, and contributions! Please open an issue o
 
 All files in this repository are released under the terms of the GNU
 General Public License as published by the Free Software Foundation;
-either version 2 of the License, or (at your option) any later version.
-
-For more details, please read the LICENSE file.
+either version 2 or later of the License.
