@@ -1,6 +1,6 @@
 # stagedings
 
-![Status: Active](https://img.shields.io/badge/status-active-brightgreen)
+[![Status: Active](https://img.shields.io/badge/status-active-brightgreen)]()
 [![Backend: FastAPI](https://img.shields.io/badge/backend-FastAPI-blue)](https://fastapi.tiangolo.com/)
 [![Real-time: WebSockets](https://img.shields.io/badge/real--time-WebSockets-orange)](https://fastapi.tiangolo.com/advanced/websockets/)
 [![Protocol: OSC](https://img.shields.io/badge/protocol-OSC-purple)](http://opensoundcontrol.org/)
