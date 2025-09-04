@@ -2,26 +2,18 @@
 
 [![Status: Active](https://img.shields.io/badge/status-active-brightgreen)](#stagedings)
 [![Backend: FastAPI](https://img.shields.io/badge/backend-FastAPI-blue)](https://fastapi.tiangolo.com/)
-[![Real-time: WebSockets](https://img.shields.io/badge/real--time-WebSockets-orange)](https://fastapi.tiangolo.com/advanced/websockets/)
+[![Protocol: WebSockets](https://img.shields.io/badge/protocol-WebSockets-orange)](https://fastapi.tiangolo.com/advanced/websockets/)
 [![Protocol: OSC](https://img.shields.io/badge/protocol-OSC-purple)](http://opensoundcontrol.org/)
-[![Control: MIDI](https://img.shields.io/badge/control-MIDI-yellow)](https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message)
+[![Protocol: MIDI](https://img.shields.io/badge/protocol-MIDI-yellow)](https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message)
 [![OpenAPI Spec](https://img.shields.io/badge/OpenAPI-available-brightgreen)](https://swagger.io/specification/)
-![Clients: Multiple](https://img.shields.io/badge/clients-multiple-lightgrey)
-
-### **stagedings** is a web UI and API to navigate scenes and subscenes that has been configured in your [mididings](https://github.com/mididings/mididings) script.
-
-> 🚧 **NOTE: This project is scheduled to be moved to the [mididings](https://github.com/mididings) GitHub organization.**  
-> Please star or watch the repo to stay updated on the move.
+### **stagedings** is a modern API to navigate scenes and subscenes that has been configured in your [mididings](https://github.com/mididings/mididings) script.
 
 ---
-
-> ⚠️ **Important:**  
-> stagedings requires a **mididings scene patch dictionary** defined in the `run` section of your mididings script to work correctly.  
+> 🗒️ **Why stagedings?**  
+> * stagedings requires a **mididings scene patch dictionary** defined in the `run` section of your mididings script to work correctly.  
 > See the mididings documentation on the [`run` section here](https://mididings.github.io/mididings/main.html#mididings.run) for how to structure your patch.
-
-> ⚠️ **Note for legacy mididings users:**  
-> stagedings is designed to **replace the old `livedings` UI**, which was based on Tkinter.  
-> It offers a modern, web-based interface with enhanced flexibility and real-time control capabilities.
+> * stagedings is designed to replace the **`livedings UI`**, which was based on Tkinter.
+> * stagedings offers a modern, web-based interface with enhanced flexibility and real-time control capabilities.
 
 ## 📸 UI Preview
 
