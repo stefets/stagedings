@@ -6,8 +6,8 @@
 import os
 import json
 import asyncio
-from services.manager import ManagerService
-from services.connection import ConnectionManager
+from core.control import Controller
+from core.connection import ConnectionManager
 
 from fastapi import Request, FastAPI, WebSocket, WebSocketDisconnect, Response
 from fastapi.responses import HTMLResponse
@@ -56,7 +56,7 @@ with open(config) as FILE:
 
 
 # Mididings and OSC context
-manager = ManagerService(configuration["osc_server"])
+controller = Controller(configuration["osc_server"])
 
 # WebSocket connection manager
 connection_manager = ConnectionManager()
@@ -65,9 +65,9 @@ connection_manager = ConnectionManager()
 load_dotenv()
 
 async def mididings_context_update():
-    await manager.set_dirty(False)
+    await controller.set_dirty(False)
     await connection_manager.broadcast(
-        {"action": "mididings_context_update", "payload": manager.scene_service.payload}
+        {"action": "mididings_context_update", "payload": controller.scene_controller.payload}
     )
 
 # UI enpoints
@@ -80,7 +80,7 @@ async def index(request: Request):
 async def ui(request: Request):
     ws_host = os.getenv("STAGEDINGS_WS_HOST", "localhost")
     return templates.TemplateResponse(
-        name="ui.html" if manager.scene_service.scenes else "no_context.html",
+        name="ui.html" if controller.scene_controller.scenes else "no_context.html",
         context={
             "request": request,
             "ws_host": ws_host,
@@ -95,8 +95,8 @@ async def ui(request: Request):
     tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def switch_scene(sceneId: int, subsceneId: int):
-    await manager.switch_scene(sceneId)
-    await manager.switch_subscene(subsceneId)
+    await controller.switch_scene(sceneId)
+    await controller.switch_subscene(subsceneId)
     return Response(status_code=204)
 
 # -----
@@ -106,7 +106,7 @@ async def switch_scene(sceneId: int, subsceneId: int):
     tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def switch_scene(sceneId: int):
-    await manager.switch_scene(sceneId)
+    await controller.switch_scene(sceneId)
     return Response(status_code=204)
 
 # -----
@@ -116,7 +116,7 @@ async def switch_scene(sceneId: int):
     tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def switch_subscene(subsceneId: int):
-    await manager.switch_subscene(subsceneId)
+    await controller.switch_subscene(subsceneId)
     return Response(status_code=204)
 
 # -----
@@ -124,7 +124,7 @@ async def switch_subscene(subsceneId: int):
     summary="Switch to the previous scene.", tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def prev_scene():
-    await manager.prev_scene()
+    await controller.prev_scene()
     return Response(status_code=204)
 
 # -----
@@ -132,7 +132,7 @@ async def prev_scene():
          summary="Switch to the next scene.", tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def next_scene():
-    await manager.next_scene()
+    await controller.next_scene()
     return Response(status_code=204)
 
 # -----
@@ -141,7 +141,7 @@ async def next_scene():
          tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def prev_subscene():
-    await manager.prev_subscene()
+    await controller.prev_subscene()
     return Response(status_code=204)
 
 # -----
@@ -149,7 +149,7 @@ async def prev_subscene():
          summary="Switch to the next subscene.", tags=["Navigation"], responses={204: {"description": "No content"}}
 )
 async def next_subscene():
-    await manager.next_subscene()
+    await controller.next_subscene()
     return Response(status_code=204)    
 
 # System endpoints
@@ -158,7 +158,7 @@ async def next_subscene():
          summary="Send all-notes-off on all channels and on all output ports.", 
          tags=["System"], responses={204: {"description": "No content"}})
 async def panic():
-    await manager.panic()
+    await controller.panic()
     return Response(status_code=204)
 
 # -----
@@ -166,7 +166,7 @@ async def panic():
          tags=["System"], responses={204: {"description": "No content"}}
 )
 async def quit():
-    await manager.quit()
+    await controller.quit()
     return Response(status_code=204)
 
 # -----
@@ -174,7 +174,7 @@ async def quit():
          tags=["System"], responses={204: {"description": "No content"}}
 )
 async def restart():
-    await manager.restart()
+    await controller.restart()
     return Response(status_code=204)
 
 # -----
@@ -183,7 +183,7 @@ async def restart():
          tags=["System"], responses={204: {"description": "No content"}}
 )
 async def query():
-    await manager.query()
+    await controller.query()
     return Response(status_code=204)
 
 """ Websocket handler """
@@ -196,7 +196,7 @@ async def websocket_endpoint(websocket: WebSocket):
         while websocket in connection_manager.active_connections:
             # Send status periodic task
             await connection_manager.broadcast(
-                {"action": "on_start" if await manager.is_running() else "on_exit"}
+                {"action": "on_start" if await controller.is_running() else "on_exit"}
             )
 
             try:
@@ -213,7 +213,7 @@ async def websocket_endpoint(websocket: WebSocket):
                 # No message received during the timeout, continue the loop
                 pass
 
-            if await manager.is_dirty():
+            if await controller.is_dirty():
                 await delegates["mididings_context_update"]()
 
     except WebSocketDisconnect:
@@ -236,25 +236,25 @@ async def on_quit(websocket: WebSocket = None):
 
 
 async def on_connect(websocket: WebSocket = None):
-    await manager.set_dirty(True)
+    await controller.set_dirty(True)
 
 
 delegates = {
 
     "on_connect": on_connect,
 
-    "quit": manager.quit,
-    "panic": manager.panic,
-    "query": manager.query,
-    "restart": manager.restart,
+    "quit": controller.quit,
+    "panic": controller.panic,
+    "query": controller.query,
+    "restart": controller.restart,
 
-    "next_scene": manager.next_scene,
-    "prev_scene": manager.prev_scene,
-    "next_subscene": manager.next_subscene,
-    "prev_subscene": manager.prev_subscene,
+    "next_scene": controller.next_scene,
+    "prev_scene": controller.prev_scene,
+    "next_subscene": controller.next_subscene,
+    "prev_subscene": controller.prev_subscene,
 
-    "switch_scene": manager.switch_scene,
-    "switch_subscene": manager.switch_subscene,
+    "switch_scene": controller.switch_scene,
+    "switch_subscene": controller.switch_subscene,
 
     "mididings_context_update": mididings_context_update,
     
