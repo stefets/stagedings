@@ -16,15 +16,11 @@
 > * stagedings offers a modern, web-based interface with enhanced flexibility and real-time control capabilities.
 
 ## 📸 UI Preview
-
 A responsive, real-time interface for scene/subscene navigation in mididings.
-
 <img src="docs/stagedings-ui.png" alt="stagedings UI screenshot" width="700"/>
 
 ---
-
 ## 🚀 Features
-
 - Web UI with real-time scene/subscene updates
 - FastAPI backend with full REST and WebSocket support
 - Multiple clients supported
@@ -34,56 +30,38 @@ A responsive, real-time interface for scene/subscene navigation in mididings.
 ---
 
 ### The UI interface allow
-
 * Direct navigation through scenes and subscenes
 * Exposes the Restart, Panic, Query and Quit commands
 
 ### The REST API expose
-
 * Endpoints for direct navigation through scenes and subscenes
 * Endpoints to the Restart, Panic, Query and Quit commands
 
 ---
 
 ## Installation & dependencies
-
 #### On the server running mididings
-
 * apt-get install liblo-dev
-
 * Clone this repository
-
 * In the stagedings/src directory
-  
   * Create a .env file
-    
     * Add the key STAGEDINGS_WS_HOST with the server name and the port of your choice:
-      
       * STAGEDINGS_WS_HOST=localhost:5000
-      
-      * STAGEDINGS_WS_HOST=stagedings.domain.dev:5000
 
 #### In a Python Virtual Environment
-
 * mididings community >= 20250818 with OSC support 
-  
   * See the mididings README for build instructions
-
 * pip install fastapi
-
 * pip install jinja2
-
 * pip install uvicorn\[standard\]
-
 ---
-
 # ▶️Running the application
 
 * In the stagedings/src directory
   
   * uvicorn main:app --port 5000 --host 0.0.0.0
 
-* Then navigate to http://stagedings.domain.dev:5000
+* Then navigate to http://localhost:5000
   
   * / for the menu
   * /ui for the frontend
