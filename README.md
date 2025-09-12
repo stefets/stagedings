@@ -12,7 +12,7 @@
 > 🤔 **Why stagedings?** 
 > * It offers a modern, web-based interface with enhanced flexibility and real-time control capabilities
 >   * It is an alternative of the legacy **`livedings UI`**, which was based on Tkinter 🪓
-> * ⚙️ Adds an HTTP layer that facilitates control and navigation allowing the abstraction of OSC subcalls
+> * ⚙️ Adds a HTTP layer that facilitates control and navigation allowing the abstraction of OSC subcalls
 >   * 🔥 That layer offers an Open API specification, so it is possible to generate a client SDK in multiple language with an Open Api Code generator like [Kiota](https://github.com/microsoft/kiota) making possible to control [mididings](https://github.com/mididings/mididings) in .NET, Go, Java, PHP, Python, Ruby and TypeScript using the openapi.json file available from the Swagger or ReDoc UI.
 > * A **mididings scene patch dictionary** defined in the `run` section of a [mididings](https://github.com/mididings/mididings) script is required to work correctly
 >   * 🗒️ See the [mididings](https://github.com/mididings/mididings) documentation on the [`run` section here](https://mididings.github.io/mididings/main.html#mididings.run) for how to structure your patch
