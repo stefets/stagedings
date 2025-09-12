@@ -70,7 +70,10 @@
   * /ui for the frontend
   * /docs or /redoc for API documentation
 
-## 📸 Documentation preview
+## 📸 More screenshots
+### Ecosystem
+<img src="docs/ecosystem.png" alt="stagedings UI screenshot" width="800"/>
+
 ### Swagger
 <img src="docs/stagedings-swagger.png" alt="stagedings UI screenshot" width="800"/>
 
