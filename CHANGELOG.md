@@ -1,3 +1,12 @@
+## [unreleased]
+
+### 🚜 Refactor
+
+- Update UI and button labels for clarity
+
+### ⚙️ Miscellaneous Tasks
+
+- Add CHANGELOG for version 1.2.0
 ## [1.2.0] - 2025-09-12
 
 ### 🚀 Features
@@ -25,6 +34,7 @@
 - [**breaking**] Update API endpoints, use POST method and improve OpenAPI schema details
 - Bump Bootstrap version to 5.38
 - Bump Bootswatch Cyborg theme to v5.3.8
+- Move .env as a template and ignore .env
 
 ### 📚 Documentation
 
