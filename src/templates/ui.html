@@ -41,9 +41,9 @@
 
     <!-- Content -->
     <div class="row mb-1">
-        <!-- Liste de scenes -->
+        <!-- List of scenes -->
         <div id="scenes" class="col-md-4 bg-light"> </div>
-        <!-- Sous-scenes de la scene courante -->
+        <!-- Sub-scene of the current scene -->
         <div id="subscenes" class="col-md-8 bg-light"> </div>
     </div>
 
@@ -53,7 +53,6 @@
         <!-- Application status console -->
         <div class="col-md-4 bg-secondary">
             <!-- Console header -->
-
             <div class="row">
                 <div class="bg-secondary col-md-4 text-center">
                     <div class="bg-light">
@@ -74,10 +73,13 @@
 
             <!-- Services state -->
             <div id="console" class="row">
+                <!-- State from OSC message -->
                 <div id="mididings-state" class="bg-secondary col-md-4 text-center">
                 </div>
+                <!-- Dummy TODO -->
                 <div id="server-state" class="bg-secondary col-md-4 text-center">
                 </div>
+                <!-- Dummy TODO -->
                 <div id="client-state" class="bg-secondary col-md-4 text-center">
                 </div>
             </div>
@@ -87,20 +89,20 @@
         <div class="col-md-8 bg-light">
             <div class="row mt-1">
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-outline-primary btn-sm" type="button" id="prev_scene"
-                        value="Previous Scene">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="prev_scene"
+                        value="⏪ Previous Scene">
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-outline-primary btn-sm" type="button" id="prev_subscene"
-                        value="Previous Sub-Scene">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="prev_subscene"
+                        value="⏮️ Previous Sub-Scene">
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-outline-primary btn-sm" type="button" id="next_subscene"
-                        value="Next Sub-Scene">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="next_subscene"
+                        value="⏭️ Next Sub-Scene">
                 </div>
                 <div class="col-md-3">
-                    <input class="w-100 btn btn-outline-primary btn-sm" type="button" id="next_scene"
-                        value="Next scene">
+                    <input class="w-100 btn btn-outline-primary" type="button" id="next_scene"
+                        value="⏩ Next scene">
                 </div>
             </div>
         </div>
@@ -166,11 +168,11 @@
                     var content = "";
                     var subscenes = [];
 
-                    // Reset content
-                    $("#scenes").text("");                  // Clear scene content 
-                    $('#subscenes').text("");               // Clear subscenes content
-                    $('#current_subscene_name').text(".");  // Default value
-                    $('#current_subscene').text("x");       // Default value
+                    // Reset view
+                    $("#scenes").text("");
+                    $('#subscenes').text("");
+                    $('#current_subscene_name').text("...");
+                    $('#current_subscene').text("0");
 
                     // Scenes
                     for (let index in context.items) {
@@ -208,7 +210,6 @@
                     count = 0;
                     content = "";
 
-                    $('#current_subscene_name').text("...");
                     for (let index in subscenes) {
 
                         var scene = subscenes[index];
