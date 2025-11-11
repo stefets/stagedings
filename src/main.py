@@ -14,6 +14,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.openapi.utils import get_openapi
+from scalar_fastapi import get_scalar_api_reference
 from dotenv import load_dotenv
 
 description = """
@@ -71,13 +72,22 @@ async def mididings_context_update():
     )
 
 # UI enpoints
+@app.get("/scalar", include_in_schema=False)
+async def scalar_html():
+    return get_scalar_api_reference(
+        # Your OpenAPI document
+        openapi_url=app.openapi_url,
+        # Avoid CORS issues (optional)
+        # scalar_proxy_url="https://proxy.scalar.com",
+    )
+
+# @app.get("/", response_class=HTMLResponse, include_in_schema=False)
+# async def index(request: Request):
+#     return templates.TemplateResponse(name="index.html", context={"request": request})
+
+
 @app.get("/", response_class=HTMLResponse, include_in_schema=False)
-async def index(request: Request):
-    return templates.TemplateResponse(name="index.html", context={"request": request})
-
-
-@app.get("/ui", response_class=HTMLResponse, include_in_schema=False)
-async def ui(request: Request):
+async def entry_point(request: Request):
     ws_host = os.getenv("STAGEDINGS_WS_HOST", "localhost")
     return templates.TemplateResponse(
         name="ui.html" if controller.scene_controller.scenes else "no_context.html",
