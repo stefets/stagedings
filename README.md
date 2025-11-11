@@ -56,6 +56,7 @@
   * See the mididings README for build instructions
 * pip install fastapi
 * pip install jinja2
+* pip install scalar-fastapi
 * pip install uvicorn\[standard\]
 ---
 # ▶️ Running the application
@@ -73,12 +74,6 @@
 ## 📸 More screenshots
 ### Ecosystem
 <img src="docs/ecosystem.png" alt="stagedings UI screenshot" width="800"/>
-
-### Swagger
-<img src="docs/stagedings-swagger.png" alt="stagedings UI screenshot" width="800"/>
-
-### ReDoc
-<img src="docs/stagedings-redoc.png" alt="stagedings UI screenshot" width="800"/>
 
 ### 💬 Feedback & Contributions
 
