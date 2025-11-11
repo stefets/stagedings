@@ -67,10 +67,6 @@
 
 * Then navigate to http://localhost:5000
   
-  * / for the menu
-  * /ui for the frontend
-  * /docs or /redoc for API documentation
-
 ## 📸 More screenshots
 ### Ecosystem
 <img src="docs/ecosystem.png" alt="stagedings UI screenshot" width="800"/>
