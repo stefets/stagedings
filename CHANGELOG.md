@@ -1,4 +1,21 @@
-## [unreleased]
+## [1.3.0] - 2025-11-11
+
+### 🚀 Features
+
+- Add scalar API reference endpoint and update entry point
+- Add navbar template and integrate it into the UI layout
+
+### 🚜 Refactor
+
+- Update no content view
+- Update navbar link
+
+### ⚙️ Miscellaneous Tasks
+
+- Update stagedings UI image
+- Add scalar-fastapi installation instruction to README
+- Remove doc url instructions from README
+## [1.2.1] - 2025-10-02
 
 ### 🚜 Refactor
 
@@ -7,6 +24,7 @@
 ### ⚙️ Miscellaneous Tasks
 
 - Add CHANGELOG for version 1.2.0
+- Update CHANGELOG for unreleased changes
 ## [1.2.0] - 2025-09-12
 
 ### 🚀 Features
